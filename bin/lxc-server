@@ -15,17 +15,6 @@ def terminate(message, exit_code=1)
   exit(exit_code)
 end
 
-def check_lxc
-  if LXC.binary_installed?('lxc-version')
-    terminate("LXC >= v0.7.5 required.") if LXC.version < '0.7.5'
-  else
-    terminate("LXC is not installed.")
-  end
-  if !LXC.installed?
-    terminate("LXC tools are missing. Make sure you're running >= v0.7.5")
-  end
-end
-
 options = {
   :bind => '0.0.0.0',
   :port => 5050
@@ -51,8 +40,6 @@ begin
 rescue OptionParser::ParseError => e
   terminate(e.message)
 end
-
-check_lxc
 
 EM.run do
   Thin::Server.start(LXC::Server, options[:bind], options[:port])
